@@ -159,7 +159,7 @@ header h1 {
     background: var(--primary-color);
     border-radius: 3px;
     transition: width 0.3s ease;
-    width: 0%;
+    width: 0;
 }
 
 .quiz-info {
