@@ -36,3 +36,12 @@ function checkAnswer(userAnswer, correctAnswer) {
         return "That's wrong, try again!";
     }
 }
+
+
+for (const [question, correctAnswer] of Object.entries(quizQuestions)) {
+    const userInput = prompt(question + " ");
+    const normalized = normalizeAnswer(userInput);
+    console.log(checkAnswer(normalized, correctAnswer));
+}
+
+console.log(`Quiz finished! Your final score is: ${score}`);
