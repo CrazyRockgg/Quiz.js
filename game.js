@@ -22,3 +22,7 @@ const quizQuestions = {
     "What stores data temporarily while the computer is on?": "ram",
     "What is the speed of the CPU measured in?": "ghz",
 };
+
+function normalizeAnswer(input) {
+    return typeof input === "string" ? input.toLowerCase() : "";
+}
