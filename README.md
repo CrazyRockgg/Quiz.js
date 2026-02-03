@@ -130,29 +130,13 @@ quiz-app/
 
 ### Adding New Questions
 
-Edit the `quizQuestions` object in [`game.js`](game.js:23):
+Navigate to line 23 of game .js and add new question and answer pairs
 
 ```javascript
 const quizQuestions = {
     "Your new question here?": "answer",
     // Add more questions...
 };
-```
-
-### Modifying Scoring
-
-Adjust the score increment/decrement values in [`checkAnswer()`](game.js:60):
-
-```javascript
-function checkAnswer(userAnswer, correctAnswer) {
-    if (userAnswer === correctAnswer) {
-        score += 2;  // Change to increase points per correct answer
-        return "That's correct!!";
-    } else {
-        score -= 1;  // Change to decrease points per wrong answer
-        return "That's wrong, try again!";
-    }
-}
 ```
 
 ## Contributing
