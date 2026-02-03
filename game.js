@@ -26,3 +26,13 @@ const quizQuestions = {
 function normalizeAnswer(input) {
     return typeof input === "string" ? input.toLowerCase() : "";
 }
+
+function checkAnswer(userAnswer, correctAnswer) {
+    if (userAnswer === correctAnswer) {
+        score++;
+        return "That's correct!!";
+    } else {
+        score--;
+        return "That's wrong, try again!";
+    }
+}
