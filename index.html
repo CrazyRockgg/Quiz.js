@@ -4,7 +4,520 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Computer Hardware Quiz Game</title>
-    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* CSS Variables */
+        :root {
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --secondary-color: #64748b;
+            --success-color: #10b981;
+            --error-color: #ef4444;
+            --background: #f8fafc;
+            --card-background: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --border-color: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+            --container-padding: 2rem;
+            --card-padding: 2rem;
+        }
+
+        /* Reset & Base */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            font-size: 16px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: var(--background);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Container */
+        .container {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: var(--container-padding);
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        header h1 {
+            font-size: clamp(1.5rem, 5vw, 2.5rem);
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+        }
+
+        /* Screen Management */
+        .screen {
+            display: none;
+            width: 100%;
+        }
+
+        .screen.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Card */
+        .card {
+            background: var(--card-background);
+            border-radius: 16px;
+            padding: var(--card-padding);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+            width: 100%;
+        }
+
+        .card h2 {
+            font-size: clamp(1.2rem, 4vw, 1.5rem);
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+            width: 100%;
+            min-height: 48px;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: var(--secondary-color);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #475569;
+            transform: translateY(-2px);
+        }
+
+        /* Start Screen */
+        #start-screen .card {
+            text-align: center;
+        }
+
+        #start-screen .instructions {
+            list-style: none;
+            margin: 1.5rem 0;
+            text-align: left;
+            display: inline-block;
+            width: 100%;
+        }
+
+        #start-screen .instructions li {
+            padding: 0.5rem 0;
+            color: var(--text-secondary);
+            font-size: clamp(0.9rem, 2.5vw, 1rem);
+        }
+
+        #start-btn {
+            max-width: 250px;
+        }
+
+        /* Quiz Screen */
+        .progress-bar {
+            height: 8px;
+            background: var(--border-color);
+            border-radius: 4px;
+            margin-bottom: 1rem;
+            overflow: hidden;
+            width: 100%;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color), #3b82f6);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+
+        .quiz-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            font-size: clamp(0.8rem, 2.5vw, 0.95rem);
+            color: var(--text-secondary);
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        #answer-input {
+            width: 100%;
+            padding: 1rem;
+            font-size: 1rem;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            margin: 1rem 0;
+            outline: none;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            min-height: 48px;
+        }
+
+        #answer-input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        #answer-input:disabled {
+            background: #f1f5f9;
+            cursor: not-allowed;
+        }
+
+        #answer-input::placeholder {
+            color: #94a3b8;
+        }
+
+        #submit-btn,
+        #next-btn {
+            margin-top: 0.5rem;
+        }
+
+        /* Feedback */
+        .feedback {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 10px;
+            font-weight: 600;
+            text-align: center;
+            display: none;
+            font-size: clamp(0.9rem, 2.5vw, 1rem);
+        }
+
+        .feedback.correct {
+            display: block;
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+
+        .feedback.wrong {
+            display: block;
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+
+        /* Result Screen */
+        #result-screen .card {
+            text-align: center;
+        }
+
+        .result-card {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+
+        .final-score {
+            margin: 2rem 0;
+        }
+
+        #final-score-value {
+            display: block;
+            font-size: clamp(3rem, 12vw, 5rem);
+            font-weight: 700;
+            color: var(--primary-color);
+            line-height: 1;
+        }
+
+        .score-label {
+            display: block;
+            font-size: clamp(1rem, 3vw, 1.3rem);
+            color: var(--text-secondary);
+            margin-top: 0.5rem;
+        }
+
+        .result-message {
+            font-size: clamp(1rem, 3vw, 1.3rem);
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        /* Stats */
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: clamp(1rem, 5vw, 3rem);
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .stat {
+            text-align: center;
+            padding: 1rem;
+            background: white;
+            border-radius: 12px;
+            min-width: 100px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .stat-value {
+            display: block;
+            font-size: clamp(1.5rem, 5vw, 2.5rem);
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        .stat-label {
+            font-size: clamp(0.8rem, 2.5vw, 0.95rem);
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+        }
+
+        #correct-count {
+            color: var(--success-color);
+        }
+
+        #wrong-count {
+            color: var(--error-color);
+        }
+
+        /* Large Screens (Tablets & Desktops) */
+        @media (min-width: 768px) {
+            :root {
+                --container-padding: 3rem;
+                --card-padding: 2.5rem;
+            }
+
+            .container {
+                padding-top: 4rem;
+            }
+
+            .btn {
+                max-width: 300px;
+            }
+
+            #submit-btn,
+            #next-btn {
+                max-width: 100%;
+            }
+        }
+
+        /* Small Screens (Mobile Portrait) */
+        @media (max-width: 480px) {
+            :root {
+                --container-padding: 1rem;
+                --card-padding: 1.25rem;
+            }
+
+            body {
+                padding: 0;
+            }
+
+            .card {
+                border-radius: 12px;
+                border-left: none;
+                border-right: none;
+            }
+
+            header {
+                margin-bottom: 1.5rem;
+            }
+
+            .quiz-info {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.25rem;
+            }
+
+            .stats {
+                gap: 1rem;
+            }
+
+            .stat {
+                min-width: 80px;
+                padding: 0.75rem;
+            }
+        }
+
+        /* Very Small Screens */
+        @media (max-width: 360px) {
+            header h1 {
+                font-size: 1.25rem;
+            }
+
+            .card {
+                padding: 1rem;
+            }
+
+            .btn {
+                padding: 0.65rem 1rem;
+                font-size: 0.9rem;
+            }
+
+            #answer-input {
+                padding: 0.75rem;
+                min-height: 44px;
+            }
+        }
+
+        /* Landscape Mode on Mobile */
+        @media (max-height: 500px) and (orientation: landscape) {
+            .container {
+                padding: 0.5rem;
+            }
+
+            .card {
+                padding: 1rem;
+            }
+
+            header {
+                margin-bottom: 0.75rem;
+            }
+
+            header h1 {
+                font-size: 1.25rem;
+                margin-bottom: 0.25rem;
+            }
+
+            .subtitle {
+                font-size: 0.85rem;
+            }
+
+            .final-score {
+                margin: 1rem 0;
+            }
+
+            #final-score-value {
+                font-size: 2.5rem;
+            }
+        }
+
+        /* High Contrast Mode */
+        @media (prefers-contrast: high) {
+            :root {
+                --border-color: #000;
+                --text-secondary: #333;
+            }
+
+            .card {
+                border: 2px solid #000;
+            }
+
+            .btn-primary {
+                border: 2px solid #000;
+            }
+        }
+
+        /* Reduced Motion */
+        @media (prefers-reduced-motion: reduce) {
+            .screen.active {
+                animation: none;
+            }
+
+            .btn:hover {
+                transform: none;
+            }
+
+            .progress-fill {
+                transition: none;
+            }
+
+            #answer-input:focus {
+                box-shadow: none;
+            }
+        }
+
+        /* Dark Mode Support */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --background: #0f172a;
+                --card-background: #1e293b;
+                --text-primary: #f1f5f9;
+                --text-secondary: #94a3b8;
+                --border-color: #334155;
+                --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+            }
+
+            .card {
+                border-color: var(--border-color);
+            }
+
+            #answer-input {
+                background: #334155;
+                border-color: #475569;
+                color: #f1f5f9;
+            }
+
+            #answer-input:focus {
+                border-color: var(--primary-color);
+            }
+
+            #answer-input:disabled {
+                background: #1e293b;
+            }
+
+            .result-card {
+                background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            }
+
+            .stat {
+                background: #334155;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -66,6 +579,210 @@
         </div>
     </div>
 
-    <script src="game.js"></script>
+    <script>
+        /**
+         * Computer Hardware Quiz Game - Web Version
+         *
+         * A web-based quiz application that tests knowledge about computer hardware components.
+         * Users answer questions about CPU, memory, storage, and other hardware parts.
+         *
+         * @module game
+         */
+
+// Quiz questions about computer hardware
+        const quizQuestions = {
+            "What is the brain of the computer?": "cpu",
+            "Which component stores data permanently?": "hard drive",
+            "What is the primary memory called?": "ram",
+            "Which component processes graphics?": "graphics card",
+            "What connects all components together?": "motherboard",
+            "What is the power supply unit abbreviated as?": "psu",
+            "Which device is used for optical disc reading?": "cd drive",
+            "What is the small battery on the motherboard called?": "cmos battery",
+            "Which component cools the CPU?": "heatsink",
+            "What is used to input text and commands?": "keyboard",
+            "Which device displays visual output?": "monitor",
+            "What is the main circuit board called?": "motherboard",
+            "Which port is used for connecting external devices?": "usb",
+            "What stores data temporarily while the computer is on?": "ram",
+            "What is the speed of the CPU measured in?": "ghz",
+        };
+
+        // Game state
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let correctAnswers = 0;
+        let wrongAnswers = 0;
+        let questions = [];
+
+        // DOM elements
+        const startScreen = document.getElementById('start-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const resultScreen = document.getElementById('result-screen');
+        const startBtn = document.getElementById('start-btn');
+        const submitBtn = document.getElementById('submit-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const restartBtn = document.getElementById('restart-btn');
+        const questionText = document.getElementById('question-text');
+        const answerInput = document.getElementById('answer-input');
+        const feedback = document.getElementById('feedback');
+        const questionCounter = document.getElementById('question-counter');
+        const scoreDisplay = document.getElementById('score-display');
+        const progressFill = document.getElementById('progress-fill');
+        const finalScoreValue = document.getElementById('final-score-value');
+        const resultMessage = document.getElementById('result-message');
+        const correctCount = document.getElementById('correct-count');
+        const wrongCount = document.getElementById('wrong-count');
+
+        // Initialize questions array
+        function initializeQuestions() {
+            questions = Object.entries(quizQuestions).map(([question, answer]) => ({
+                question,
+                answer
+            }));
+            // Shuffle questions
+            questions = shuffleArray(questions);
+        }
+
+        // Shuffle array using Fisher-Yates algorithm
+        function shuffleArray(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
+        // Normalize user input for comparison
+        function normalizeAnswer(input) {
+            return typeof input === "string" ? input.toLowerCase().trim() : "";
+        }
+
+        // Show a specific screen
+        function showScreen(screen) {
+            startScreen.classList.remove('active');
+            quizScreen.classList.remove('active');
+            resultScreen.classList.remove('active');
+            screen.classList.add('active');
+        }
+
+        // Start the quiz
+        function startQuiz() {
+            currentQuestionIndex = 0;
+            score = 0;
+            correctAnswers = 0;
+            wrongAnswers = 0;
+            initializeQuestions();
+            showQuestion();
+            showScreen(quizScreen);
+        }
+
+        // Display current question
+        function showQuestion() {
+            const currentQuestion = questions[currentQuestionIndex];
+            questionText.textContent = currentQuestion.question;
+            answerInput.value = '';
+            answerInput.disabled = false;
+            feedback.className = 'feedback';
+            feedback.textContent = '';
+            submitBtn.style.display = 'inline-block';
+            nextBtn.style.display = 'none';
+
+            // Update progress
+            questionCounter.textContent = `Question ${currentQuestionIndex + 1}/${questions.length}`;
+            scoreDisplay.textContent = `Score: ${score}`;
+            progressFill.style.width = `${((currentQuestionIndex) / questions.length) * 100}%`;
+
+            // Focus input
+            answerInput.focus();
+        }
+
+        // Check the answer
+        function checkAnswer() {
+            const userAnswer = normalizeAnswer(answerInput.value);
+            const correctAnswer = normalizeAnswer(questions[currentQuestionIndex].answer);
+
+            answerInput.disabled = true;
+
+            if (userAnswer === correctAnswer) {
+                score++;
+                correctAnswers++;
+                feedback.textContent = "That's correct!! 🎉";
+                feedback.className = 'feedback correct';
+            } else {
+                score--;
+                wrongAnswers++;
+                feedback.textContent = `That's wrong! The correct answer is: ${questions[currentQuestionIndex].answer}`;
+                feedback.className = 'feedback wrong';
+            }
+
+            // Update score display
+            scoreDisplay.textContent = `Score: ${score}`;
+
+            submitBtn.style.display = 'none';
+            nextBtn.style.display = 'inline-block';
+            nextBtn.focus();
+        }
+
+        // Go to next question or show results
+        function nextQuestion() {
+            currentQuestionIndex++;
+
+            if (currentQuestionIndex < questions.length) {
+                showQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        // Display final results
+        function showResults() {
+            progressFill.style.width = '100%';
+            finalScoreValue.textContent = score;
+            correctCount.textContent = correctAnswers;
+            wrongCount.textContent = wrongAnswers;
+
+            // Generate result message based on score
+            const percentage = (score / questions.length) * 100;
+            let message = '';
+
+            if (percentage >= 87) {
+                message = "🏆 Excellent! You're a Hardware Expert!";
+            } else if (percentage >= 67) {
+                message = "🌟 Very Good! You know your hardware well!";
+            } else if (percentage >= 47) {
+                message = "👍 Good job! Keep learning!";
+            } else if (percentage >= 27) {
+                message = "📚 Not bad! Room for improvement.";
+            } else {
+                message = "💪 Keep studying! You'll get better!";
+            }
+
+            resultMessage.textContent = message;
+            showScreen(resultScreen);
+        }
+
+        // Event Listeners
+        startBtn.addEventListener('click', startQuiz);
+        submitBtn.addEventListener('click', checkAnswer);
+        nextBtn.addEventListener('click', nextQuestion);
+        restartBtn.addEventListener('click', startQuiz);
+
+        // Allow Enter key to submit or go to next question
+        answerInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !answerInput.disabled) {
+                checkAnswer();
+            }
+        });
+
+        // Handle Enter key on next button
+        nextBtn.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                nextQuestion();
+            }
+        });
+
+    </script>
 </body>
 </html>
