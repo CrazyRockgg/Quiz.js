@@ -190,7 +190,7 @@
             background: linear-gradient(90deg, var(--primary-color), #3b82f6);
             border-radius: 4px;
             transition: width 0.3s ease;
-            width: 0%;
+            width: 0;
         }
 
         .quiz-info {
@@ -446,7 +446,7 @@
         }
 
         /* High Contrast Mode */
-        @media (prefers-contrast: high) {
+        @media (prefers-contrast: more) {
             :root {
                 --border-color: #000;
                 --text-secondary: #333;
@@ -549,6 +549,7 @@
             </div>
             <div class="card">
                 <h2 id="question-text">Question goes here</h2>
+                <label for="answer-input"></label>
                 <input type="text" id="answer-input" placeholder="Type your answer..." autocomplete="off">
                 <button id="submit-btn" class="btn btn-primary">Submit Answer</button>
                 <button id="next-btn" class="btn btn-secondary" style="display: none;">Next Question</button>
@@ -745,7 +746,7 @@
 
             // Generate result message based on score
             const percentage = (score / questions.length) * 100;
-            let message = '';
+            let message;
 
             if (percentage >= 87) {
                 message = "🏆 Excellent! You're a Hardware Expert!";
